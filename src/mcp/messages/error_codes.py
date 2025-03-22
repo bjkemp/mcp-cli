@@ -1,40 +1,72 @@
-# mcp/messages/error_codes.py
+# src/mcp/messages/error_codes.py
 """
-Error code definitions for JSON-RPC protocol.
+MCP protocol error codes.
+
+This module defines the standard error codes used in the MCP protocol.
 """
 
-# Standard JSON-RPC 2.0 error codes
-PARSE_ERROR = -32700
-INVALID_REQUEST = -32600
-METHOD_NOT_FOUND = -32601
-INVALID_PARAMS = -32602
-INTERNAL_ERROR = -32603
 
-# Server error codes (reserved from -32000 to -32099)
-SERVER_ERROR_START = -32000
-SERVER_ERROR_END = -32099
-
-# Define which errors are non-retryable
-NON_RETRYABLE_ERRORS = {
-    METHOD_NOT_FOUND,  # Method not found is a permanent error
-    INVALID_REQUEST,   # Invalid request is a client error, retrying won't help
-    INVALID_PARAMS,    # Invalid params is a client error, retrying won't help
-}
-
-# Error code descriptions
-ERROR_MESSAGES = {
-    PARSE_ERROR: "Parse error: Invalid JSON was received by the server.",
-    INVALID_REQUEST: "Invalid Request: The JSON sent is not a valid Request object.",
-    METHOD_NOT_FOUND: "Method not found: The method does not exist / is not available.",
-    INVALID_PARAMS: "Invalid params: Invalid method parameter(s).",
-    INTERNAL_ERROR: "Internal error: Internal JSON-RPC error.",
-    SERVER_ERROR_START: "Server error: Something went wrong on the server.",
-}
-
-def get_error_message(code):
-    """Get the description for an error code."""
-    return ERROR_MESSAGES.get(code, f"Unknown error: Code {code}")
-
-def is_retryable_error(code):
-    """Determine if an error should be retried."""
-    return code not in NON_RETRYABLE_ERRORS
+class ErrorCodes:
+    """Constants for MCP protocol error codes."""
+    
+    # JSON-RPC standard error codes
+    PARSE_ERROR = -32700
+    INVALID_REQUEST = -32600
+    METHOD_NOT_FOUND = -32601
+    INVALID_PARAMS = -32602
+    INTERNAL_ERROR = -32603
+    
+    # MCP specific error codes
+    INITIALIZATION_FAILED = 1000
+    INVALID_TOOL = 1100
+    TOOL_EXECUTION_FAILED = 1101
+    INVALID_PROMPT = 1200
+    PROMPT_NOT_FOUND = 1201
+    INVALID_RESOURCE = 1300
+    RESOURCE_NOT_FOUND = 1301
+    
+    # File system error codes
+    FS_FILE_NOT_FOUND = 2000
+    FS_PERMISSION_DENIED = 2001
+    FS_IO_ERROR = 2002
+    FS_INVALID_PATH = 2003
+    
+    # Database error codes
+    DB_CONNECTION_ERROR = 3000
+    DB_QUERY_ERROR = 3001
+    DB_TABLE_NOT_FOUND = 3002
+    
+    @classmethod
+    def get_message(cls, code: int) -> str:
+        """
+        Get the default message for an error code.
+        
+        Args:
+            code: The error code
+            
+        Returns:
+            The default error message
+        """
+        messages = {
+            cls.PARSE_ERROR: "Parse error",
+            cls.INVALID_REQUEST: "Invalid request",
+            cls.METHOD_NOT_FOUND: "Method not found",
+            cls.INVALID_PARAMS: "Invalid parameters",
+            cls.INTERNAL_ERROR: "Internal error",
+            cls.INITIALIZATION_FAILED: "Initialization failed",
+            cls.INVALID_TOOL: "Invalid tool",
+            cls.TOOL_EXECUTION_FAILED: "Tool execution failed",
+            cls.INVALID_PROMPT: "Invalid prompt",
+            cls.PROMPT_NOT_FOUND: "Prompt not found",
+            cls.INVALID_RESOURCE: "Invalid resource",
+            cls.RESOURCE_NOT_FOUND: "Resource not found",
+            cls.FS_FILE_NOT_FOUND: "File not found",
+            cls.FS_PERMISSION_DENIED: "Permission denied",
+            cls.FS_IO_ERROR: "I/O error",
+            cls.FS_INVALID_PATH: "Invalid path",
+            cls.DB_CONNECTION_ERROR: "Database connection error",
+            cls.DB_QUERY_ERROR: "Database query error",
+            cls.DB_TABLE_NOT_FOUND: "Table not found"
+        }
+        
+        return messages.get(code, "Unknown error")
